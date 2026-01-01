@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XBZIM x JÃO</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* --- Matrix Roxo Ultra Forte --- */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* --- Tela de Carregamento --- */
+        #loader-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 1s ease;
+        }
+
+        .brand-name {
+            font-size: 3.5rem;
+            color: #bc13fe;
+            text-shadow: 0 0 20px #bc13fe, 0 0 40px #bc13fe;
+            margin-bottom: 30px;
+            font-weight: 900;
+            text-transform: uppercase;
+            /* ISSO GARANTE QUE O NOME FIQUE EM UMA LINHA SÓ */
+            white-space: nowrap; 
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .loader-container {
+            width: 400px; /* Aumentei para caber tudo folgado */
+            text-align: center;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 15px;
+            background-color: #1a1a1a;
+            border: 2px solid #bc13fe;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #bc13fe;
+            box-shadow: 0 0 20px #bc13fe;
+        }
+
+        #percentage {
+            font-size: 1.8rem;
+            color: #bc13fe;
+            font-weight: bold;
+            text-shadow: 0 0 10px #bc13fe;
+        }
+
+        /* --- Menu Principal --- */
+        #main-menu {
+            position: relative;
+            z-index: 10;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+        }
+
+        .menu-title {
+            font-size: 2.8rem;
+            color: #bc13fe;
+            margin-bottom: 40px;
+            font-weight: bold;
+            text-shadow: 0 0 15px #bc13fe;
+            white-space: nowrap;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #bc13fe;
+            padding: 15px 30px;
+            margin: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+            width: 380px;
+        }
+
+        .menu-item:hover {
+            background: #bc13fe;
+            color: black;
+            box-shadow: 0 0 35px #bc13fe;
+            transform: scale(1.05);
+        }
+
+        .icon {
+            width: 35px;
+            height: 35px;
+            margin-right: 15px;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+
+    <div id="loader-screen">
+        <div class="brand-name">XBZIM x JÃO</div>
+        <div class="loader-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="fill"></div>
+            </div>
+            <div id="percentage">0%</div>
+        </div>
+    </div>
+
+    <div id="main-menu">
+        <div class="menu-title">XBZIM x JÃO</div>
+        
+        <a href="https://discord.gg/JBYZeW5p2n" target="_blank" class="menu-item">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" class="icon" alt="Discord">
+            <span class="title">AZULZINHO XBZIM X JÃO</span>
+        </a>
+
+        <a href="https://tiktok.com/@mateus_zx75" target="_blank" class="menu-item">
+            <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="icon" alt="TikTok">
+            <span class="title">TIKTOK XBZIM X JÃO</span>
+        </a>
+    </div>
+
+    <script>
+        // --- Matrix Roxo Intenso ---
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789";
+        const fontSize = 18;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = "bold " + fontSize + "px monospace";
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#bc13fe";
+            ctx.fillStyle = "#bc13fe"; 
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // --- Carregamento 8 Segundos ---
+        const fill = document.getElementById('fill');
+        const percentageText = document.getElementById('percentage');
+        const loaderScreen = document.getElementById('loader-screen');
+        const mainMenu = document.getElementById('main-menu');
+        
+        let width = 0;
+        const duration = 8000; 
+        const intervalTime = 80; 
+        const increment = 100 / (duration / intervalTime);
+
+        const loadingInterval = setInterval(() => {
+            width += increment;
+            if (width >= 100) {
+                width = 100;
+                clearInterval(loadingInterval);
+                
+                setTimeout(() => {
+                    loaderScreen.style.opacity = "0";
+                    setTimeout(() => {
+                        loaderScreen.style.display = "none";
+                        mainMenu.style.display = "flex";
+                    }, 1000);
+                }, 500);
+            }
+            fill.style.width = width + "%";
+            percentageText.innerText = Math.floor(width) + "%";
+        }, intervalTime);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
